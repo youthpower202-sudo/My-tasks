@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="theme-color" content="#0f3d2e"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<title>My Tasks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --green-deep:#0f3d2e;--green-mid:#1a5c43;--green-bright:#2d8a5e;
+  --green-light:#e8f5ef;--green-pale:#f2faf6;
+  --gold:#c8993a;--red:#b33a3a;--red-light:#fdeaea;
+  --amber:#b87e1a;--amber-light:#fdf0d5;
+  --text-primary:#0f1f18;--text-secondary:#4a6358;--text-muted:#8aa89c;
+  --border:#d4e8de;--white:#ffffff;--surface:#f7fcf9;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text-primary);overflow-x:hidden}
+body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height:100vh;background:var(--white)}
+.topbar{background:var(--green-deep);position:sticky;top:0;z-index:100;padding:env(safe-area-inset-top,0) 0 0}
+.topbar-inner{padding:16px 20px 14px;display:flex;align-items:center;justify-content:space-between}
+.app-name{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;line-height:1;display:flex;align-items:center;gap:8px}
+.sync-dot{width:9px;height:9px;border-radius:50%;background:#4caf50;flex-shrink:0}
+.sync-dot.syncing{background:var(--gold);animation:pulse 1s infinite}
+.sync-dot.offline{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.app-date{font-size:12px;color:rgba(255,255,255,0.6);margin-top:3px;font-weight:300}
+.add-fab{width:44px;height:44px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;line-height:1}
+.add-fab:active{transform:scale(0.93)}
+.alert-bar{background:var(--red);color:#fff;padding:10px 20px;font-size:13px;font-weight:500;display:none;align-items:center;gap:8px}
+.alert-bar.show{display:flex}
+.info-bar{background:var(--green-mid);color:rgba(255,255,255,0.85);padding:7px 20px;font-size:12px;display:none;align-items:center;gap:6px}
+.info-bar.show{display:flex}
+.filter-tabs{display:flex;padding:0 16px;background:var(--green-deep);overflow-x:auto;scrollbar-width:none}
+.filter-tabs::-webkit-scrollbar{display:none}
+.ftab{flex-shrink:0;padding:10px 16px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.ftab.active{color:#fff;border-bottom-color:var(--gold)}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 16px 8px}
+.stat{background:var(--green-pale);border-radius:var(--radius-sm);padding:12px;text-align:center}
+.stat-n{font-size:26px;font-weight:600;color:var(--green-deep);line-height:1}
+.stat-l{font-size:11px;color:var(--text-secondary);margin-top:3px}
+.task-list{padding:0 12px 100px;display:flex;flex-direction:column;gap:8px}
+.task-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 14px 12px;display:flex;gap:12px;align-items:flex-start;position:relative;overflow:hidden}
+.task-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
+.task-card.pri-High::before{background:var(--red)}
+.task-card.pri-Medium::before{background:var(--gold)}
+.task-card.pri-Low::before{background:var(--green-bright)}
+.task-card.done{opacity:0.45}
+.task-card.done .task-title{text-decoration:line-through}
+.check-btn{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:12px;font-weight:700;color:transparent}
+.task-card.done .check-btn{background:var(--green-bright);border-color:var(--green-bright);color:#fff}
+.task-body{flex:1;min-width:0}
+.task-title{font-size:15px;font-weight:500;color:var(--text-primary);line-height:1.4}
+.task-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;align-items:center}
+.badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
+.badge-High{background:var(--red-light);color:var(--red)}
+.badge-Medium{background:var(--amber-light);color:var(--amber)}
+.badge-Low{background:var(--green-light);color:var(--green-mid)}
+.badge-cat{background:var(--green-pale);color:var(--text-secondary)}
+.due-chip{font-size:11px;color:var(--text-muted)}
+.due-chip.alert{color:var(--red);font-weight:500}
+.del-btn{flex-shrink:0;background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:2px 6px;border-radius:6px}
+.del-btn:active{background:var(--red-light);color:var(--red)}
+.empty{text-align:center;padding:3rem 2rem;color:var(--text-muted);font-size:14px}
+.loading{text-align:center;padding:2.5rem;color:var(--text-muted);font-size:13px}
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:flex-end}
+.sheet-overlay.open{display:flex}
+.sheet{background:var(--white);border-radius:20px 20px 0 0;padding:0 0 env(safe-area-inset-bottom,16px);width:100%;max-height:90vh;overflow-y:auto}
+.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 4px}
+.sheet-title{font-family:'DM Serif Display',serif;font-size:20px;padding:8px 20px 16px;color:var(--green-deep)}
+.field{padding:0 20px 14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;letter-spacing:0.3px}
+.field input,.field select{width:100%;font-size:15px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-primary);font-family:'DM Sans',sans-serif;-webkit-appearance:none}
+.field input:focus,.field select:focus{outline:2px solid var(--green-bright);border-color:transparent}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 14px}
+.field-row .field{padding:0}
+.save-btn{display:block;width:calc(100% - 40px);margin:4px 20px 16px;padding:15px;background:var(--green-deep);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+.save-btn:active{background:var(--green-mid)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div>
+      <div class="app-name">My Tasks <span class="sync-dot syncing" id="sync-dot"></span></div>
+      <div class="app-date" id="today-label"></div>
+    </div>
+    <button class="add-fab" onclick="openSheet()" aria-label="Add task">+</button>
+  </div>
+  <div class="alert-bar" id="alert-bar">⚠ <span id="alert-text"></span></div>
+  <div class="info-bar" id="info-bar">↻ <span id="info-text">Connecting...</span></div>
+  <div class="filter-tabs">
+    <button class="ftab active" onclick="setFilter('all',this)">All</button>
+    <button class="ftab" onclick="setFilter('High',this)">High</button>
+    <button class="ftab" onclick="setFilter('Medium',this)">Medium</button>
+    <button class="ftab" onclick="setFilter('Low',this)">Low</button>
+    <button class="ftab" onclick="setFilter('done',this)">Done</button>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat"><div class="stat-n" id="s-total">—</div><div class="stat-l">Total</div></div>
+  <div class="stat"><div class="stat-n" id="s-pending">—</div><div class="stat-l">Pending</div></div>
+  <div class="stat"><div class="stat-n" id="s-done">—</div><div class="stat-l">Done</div></div>
+</div>
+
+<div class="task-list" id="task-list"><div class="loading">☁ Connecting to cloud sync...</div></div>
+
+<div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">New Task</div>
+    <div class="field">
+      <label>What needs to be done?</label>
+      <input id="f-title" type="text" placeholder="Enter task description"/>
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="f-cat">
+        <option>YPO Operations</option><option>Vijana Plus</option><option>VIDEE</option>
+        <option>Consulting</option><option>Finance</option><option>Meetings</option><option>Other</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Priority</label>
+        <select id="f-pri">
+          <option value="High">High</option>
+          <option value="Medium" selected>Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Due date</label>
+        <input id="f-due" type="date"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Remind me (days before due)</label>
+      <select id="f-remind">
+        <option value="0">Same day</option>
+        <option value="1" selected>1 day before</option>
+        <option value="2">2 days before</option>
+        <option value="3">3 days before</option>
+      </select>
+    </div>
+    <button class="save-btn" onclick="saveTask()">Save Task</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, onSnapshot,
+  updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCbPOfGejAGw9F_x0UglcOOiNV_dpY2-0c",
+  authDomain: "my-tasks-c929c.firebaseapp.com",
+  projectId: "my-tasks-c929c",
+  storageBucket: "my-tasks-c929c.firebasestorage.app",
+  messagingSenderId: "94161075172",
+  appId: "1:94161075172:web:92f562bedb45d6a2b4a5f1"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+const tasksCol = collection(db, "tasks");
+
+let tasks = [];
+let currentFilter = 'all';
+let seeded = false;
+
+function setSyncStatus(s) {
+  const dot = document.getElementById('sync-dot');
+  const bar = document.getElementById('info-bar');
+  const txt = document.getElementById('info-text');
+  dot.className = 'sync-dot';
+  if (s === 'live') { bar.classList.remove('show'); }
+  else if (s === 'syncing') { dot.classList.add('syncing'); bar.classList.add('show'); txt.textContent = '↻ Syncing...'; }
+  else if (s === 'offline') { dot.classList.add('offline'); bar.classList.add('show'); txt.textContent = 'Offline — will sync when connected'; }
+}
+
+const q = query(tasksCol, orderBy("createdAt", "asc"));
+
+onSnapshot(q, async (snapshot) => {
+  tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  setSyncStatus('live');
+
+  // Seed sample tasks once if empty
+  if (!seeded && tasks.length === 0) {
+    seeded = true;
+    const today = new Date();
+    const fd = d => { const x = new Date(today); x.setDate(x.getDate()+d); return x.toISOString().split('T')[0]; };
+    const samples = [
+      {title:'Submit Vijana Plus monthly report to Save the Children',cat:'Vijana Plus',pri:'High',due:fd(1),remind:1,done:false},
+      {title:'Follow up on EU funding disbursement with TBI',cat:'Vijana Plus',pri:'High',due:fd(2),remind:1,done:false},
+      {title:'Review and sign staff ID system memo',cat:'YPO Operations',pri:'Medium',due:fd(3),remind:1,done:false},
+      {title:'Update Zoho Books — April 2026 petty cash entries',cat:'Finance',pri:'Medium',due:fd(1),remind:0,done:false},
+      {title:'Prepare VIDEE pitch deck final version',cat:'VIDEE',pri:'High',due:fd(5),remind:2,done:false},
+    ];
+    for (const t of samples) await addDoc(tasksCol, {...t, createdAt: serverTimestamp()});
+    return;
+  }
+  seeded = true;
+  render();
+}, (err) => {
+  setSyncStatus('offline');
+  console.error('Firestore error:', err);
+});
+
+function dueStatus(due, remind, done) {
+  if (!due || done) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dd = new Date(due); dd.setHours(0,0,0,0);
+  const diff = Math.round((dd - today) / 86400000);
+  if (diff < 0) return {label:'Overdue '+Math.abs(diff)+'d', alert:true};
+  if (diff === 0) return {label:'Due today', alert:true};
+  if (diff <= remind) return {label:'Due in '+diff+'d', alert:true};
+  return {label: dd.toLocaleDateString('en-GB',{day:'numeric',month:'short'}), alert:false};
+}
+
+window.setFilter = (f, btn) => {
+  currentFilter = f;
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+};
+
+window.toggleDone = async (id) => {
+  setSyncStatus('syncing');
+  const t = tasks.find(x => x.id === id);
+  if (t) await updateDoc(doc(db,'tasks',id), {done: !t.done});
+};
+
+window.deleteTask = async (id) => {
+  if (confirm('Delete this task?')) {
+    setSyncStatus('syncing');
+    await deleteDoc(doc(db,'tasks',id));
+  }
+};
+
+window.openSheet = () => {
+  const d = new Date(); d.setDate(d.getDate()+1);
+  document.getElementById('f-due').value = d.toISOString().split('T')[0];
+  document.getElementById('f-title').value = '';
+  document.getElementById('sheet-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('f-title').focus(), 300);
+};
+
+window.closeSheet = (e) => {
+  if (e.target === document.getElementById('sheet-overlay'))
+    document.getElementById('sheet-overlay').classList.remove('open');
+};
+
+window.saveTask = async () => {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { document.getElementById('f-title').focus(); return; }
+  setSyncStatus('syncing');
+  await addDoc(tasksCol, {
+    title,
+    cat: document.getElementById('f-cat').value,
+    pri: document.getElementById('f-pri').value,
+    due: document.getElementById('f-due').value,
+    remind: parseInt(document.getElementById('f-remind').value),
+    done: false,
+    createdAt: serverTimestamp()
+  });
+  document.getElementById('sheet-overlay').classList.remove('open');
+};
+
+function render() {
+  document.getElementById('today-label').textContent =
+    new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  let visible = currentFilter === 'done' ? tasks.filter(t => t.done)
+    : currentFilter === 'all' ? tasks.filter(t => !t.done)
+    : tasks.filter(t => t.pri === currentFilter && !t.done);
+
+  const sorted = [...visible].sort((a,b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return ({High:0,Medium:1,Low:2}[a.pri]||1) - ({High:0,Medium:1,Low:2}[b.pri]||1);
+  });
+
+  const list = document.getElementById('task-list');
+  list.innerHTML = sorted.length ? sorted.map(t => {
+    const ds = dueStatus(t.due, t.remind, t.done);
+    return `<div class="task-card pri-${t.pri} ${t.done?'done':''}">
+      <button class="check-btn" onclick="toggleDone('${t.id}')">${t.done?'✓':''}</button>
+      <div class="task-body">
+        <div class="task-title">${t.title}</div>
+        <div class="task-meta">
+          <span class="badge badge-${t.pri}">${t.pri}</span>
+          <span class="badge badge-cat">${t.cat}</span>
+          ${ds?`<span class="due-chip ${ds.alert?'alert':''}">🕐 ${ds.label}</span>`:''}
+        </div>
+      </div>
+      <button class="del-btn" onclick="deleteTask('${t.id}')">✕</button>
+    </div>`;
+  }).join('') : '<div class="empty">No tasks here</div>';
+
+  const alerts = tasks.filter(t => { if(t.done) return false; const ds=dueStatus(t.due,t.remind,false); return ds&&ds.alert; });
+  const ab = document.getElementById('alert-bar');
+  if (alerts.length) {
+    ab.classList.add('show');
+    document.getElementById('alert-text').textContent = alerts.length+' task'+(alerts.length>1?'s':'')+' need your attention today';
+  } else ab.classList.remove('show');
+
+  document.getElementById('s-total').textContent = tasks.length;
+  document.getElementById('s-pending').textContent = tasks.filter(t=>!t.done).length;
+  document.getElementById('s-done').textContent = tasks.filter(t=>t.done).length;
+}
+
+if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+
+document.getElementById('today-label').textContent =
+  new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+setSyncStatus('syncing');
+</script>
+</body>
+</html>
