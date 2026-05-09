@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <title>My Tasks</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -54,7 +53,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .task-card.done .task-title{text-decoration:line-through}
 .check-btn{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:12px;font-weight:700;color:transparent}
 .task-card.done .check-btn{background:var(--green-bright);border-color:var(--green-bright);color:#fff}
-.task-body{flex:1;min-width:0}
+.task-body{flex:1;min-width:0;cursor:pointer}
 .task-title{font-size:15px;font-weight:500;color:var(--text-primary);line-height:1.4}
 .task-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;align-items:center}
 .badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
@@ -64,23 +63,44 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .badge-cat{background:var(--green-pale);color:var(--text-secondary)}
 .due-chip{font-size:11px;color:var(--text-muted)}
 .due-chip.alert{color:var(--red);font-weight:500}
-.del-btn{flex-shrink:0;background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:2px 6px;border-radius:6px}
+.card-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.edit-btn{background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:2px 4px;border-radius:6px;line-height:1}
+.edit-btn:active{background:var(--green-light);color:var(--green-mid)}
+.del-btn{background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:2px 4px;border-radius:6px;line-height:1}
 .del-btn:active{background:var(--red-light);color:var(--red)}
 .empty{text-align:center;padding:3rem 2rem;color:var(--text-muted);font-size:14px}
 .loading{text-align:center;padding:2.5rem;color:var(--text-muted);font-size:13px}
+
+/* SHEET */
 .sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:flex-end}
 .sheet-overlay.open{display:flex}
-.sheet{background:var(--white);border-radius:20px 20px 0 0;padding:0 0 env(safe-area-inset-bottom,16px);width:100%;max-height:90vh;overflow-y:auto}
+.sheet{background:var(--white);border-radius:20px 20px 0 0;padding:0 0 env(safe-area-inset-bottom,16px);width:100%;max-height:92vh;overflow-y:auto}
 .sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 4px}
 .sheet-title{font-family:'DM Serif Display',serif;font-size:20px;padding:8px 20px 16px;color:var(--green-deep)}
 .field{padding:0 20px 14px}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;letter-spacing:0.3px}
-.field input,.field select{width:100%;font-size:15px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-primary);font-family:'DM Sans',sans-serif;-webkit-appearance:none}
-.field input:focus,.field select:focus{outline:2px solid var(--green-bright);border-color:transparent}
+.field input,.field select,.field textarea{width:100%;font-size:15px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-primary);font-family:'DM Sans',sans-serif;-webkit-appearance:none}
+.field textarea{resize:vertical;min-height:70px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--green-bright);border-color:transparent}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 14px}
 .field-row .field{padding:0}
+.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 20px 14px}
+.field-row3 .field{padding:0}
 .save-btn{display:block;width:calc(100% - 40px);margin:4px 20px 16px;padding:15px;background:var(--green-deep);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
 .save-btn:active{background:var(--green-mid)}
+
+/* Other category input */
+.other-input{display:none;margin-top:8px}
+.other-input.show{display:block}
+
+/* Alarm modal */
+.alarm-modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+.alarm-modal.open{display:flex}
+.alarm-box{background:var(--white);border-radius:20px;padding:24px;width:100%;max-width:340px;text-align:center}
+.alarm-icon{font-size:48px;margin-bottom:12px}
+.alarm-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--green-deep);margin-bottom:6px}
+.alarm-task{font-size:14px;color:var(--text-secondary);margin-bottom:20px;line-height:1.5}
+.alarm-dismiss{background:var(--green-deep);color:#fff;border:none;padding:12px 32px;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;width:100%}
 </style>
 </head>
 <body>
@@ -112,45 +132,70 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 
 <div class="task-list" id="task-list"><div class="loading">☁ Connecting to cloud sync...</div></div>
 
+<!-- ADD / EDIT SHEET -->
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">New Task</div>
+    <div class="sheet-title" id="sheet-title">New Task</div>
     <div class="field">
-      <label>What needs to be done?</label>
-      <input id="f-title" type="text" placeholder="Enter task description"/>
+      <label>Task description</label>
+      <textarea id="f-title" placeholder="What needs to be done?"></textarea>
     </div>
     <div class="field">
       <label>Category</label>
-      <select id="f-cat">
-        <option>YPO Operations</option><option>Vijana Plus</option><option>VIDEE</option>
-        <option>Consulting</option><option>Finance</option><option>Meetings</option><option>Other</option>
+      <select id="f-cat" onchange="handleCatChange()">
+        <option value="YPO Operations">YPO Operations</option>
+        <option value="SUA">SUA</option>
+        <option value="Consulting">Consulting</option>
+        <option value="Meetings">Meetings</option>
+        <option value="Family">Family</option>
+        <option value="Other">Other (specify below)</option>
+      </select>
+      <div class="other-input" id="other-input">
+        <input id="f-other-cat" type="text" placeholder="Type your category..."/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Priority</label>
+      <select id="f-pri">
+        <option value="High">High</option>
+        <option value="Medium" selected>Medium</option>
+        <option value="Low">Low</option>
       </select>
     </div>
     <div class="field-row">
       <div class="field">
-        <label>Priority</label>
-        <select id="f-pri">
-          <option value="High">High</option>
-          <option value="Medium" selected>Medium</option>
-          <option value="Low">Low</option>
-        </select>
-      </div>
-      <div class="field">
         <label>Due date</label>
         <input id="f-due" type="date"/>
       </div>
+      <div class="field">
+        <label>Due time</label>
+        <input id="f-time" type="time"/>
+      </div>
     </div>
     <div class="field">
-      <label>Remind me (days before due)</label>
-      <select id="f-remind">
-        <option value="0">Same day</option>
-        <option value="1" selected>1 day before</option>
-        <option value="2">2 days before</option>
-        <option value="3">3 days before</option>
+      <label>Alarm reminder</label>
+      <select id="f-alarm">
+        <option value="0">At due time</option>
+        <option value="15">15 minutes before</option>
+        <option value="30">30 minutes before</option>
+        <option value="60" selected>1 hour before</option>
+        <option value="120">2 hours before</option>
+        <option value="1440">1 day before</option>
       </select>
     </div>
-    <button class="save-btn" onclick="saveTask()">Save Task</button>
+    <input type="hidden" id="f-edit-id"/>
+    <button class="save-btn" id="save-btn" onclick="saveTask()">Save Task</button>
+  </div>
+</div>
+
+<!-- ALARM POPUP -->
+<div class="alarm-modal" id="alarm-modal">
+  <div class="alarm-box">
+    <div class="alarm-icon">⏰</div>
+    <div class="alarm-title">Task Reminder!</div>
+    <div class="alarm-task" id="alarm-task-text"></div>
+    <button class="alarm-dismiss" onclick="dismissAlarm()">Got it — Dismiss</button>
   </div>
 </div>
 
@@ -177,6 +222,7 @@ const tasksCol = collection(db, "tasks");
 let tasks = [];
 let currentFilter = 'all';
 let seeded = false;
+let alarmTimers = [];
 
 function setSyncStatus(s) {
   const dot = document.getElementById('sync-dot');
@@ -189,44 +235,104 @@ function setSyncStatus(s) {
 }
 
 const q = query(tasksCol, orderBy("createdAt", "asc"));
-
 onSnapshot(q, async (snapshot) => {
   tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
   setSyncStatus('live');
-
-  // Seed sample tasks once if empty
   if (!seeded && tasks.length === 0) {
     seeded = true;
     const today = new Date();
     const fd = d => { const x = new Date(today); x.setDate(x.getDate()+d); return x.toISOString().split('T')[0]; };
     const samples = [
-      {title:'Submit Vijana Plus monthly report to Save the Children',cat:'Vijana Plus',pri:'High',due:fd(1),remind:1,done:false},
-      {title:'Follow up on EU funding disbursement with TBI',cat:'Vijana Plus',pri:'High',due:fd(2),remind:1,done:false},
-      {title:'Review and sign staff ID system memo',cat:'YPO Operations',pri:'Medium',due:fd(3),remind:1,done:false},
-      {title:'Update Zoho Books — April 2026 petty cash entries',cat:'Finance',pri:'Medium',due:fd(1),remind:0,done:false},
-      {title:'Prepare VIDEE pitch deck final version',cat:'VIDEE',pri:'High',due:fd(5),remind:2,done:false},
+      {title:'Submit Vijana Plus monthly report to Save the Children',cat:'YPO Operations',pri:'High',due:fd(1),time:'09:00',alarm:60,done:false},
+      {title:'Follow up on EU funding disbursement with TBI',cat:'YPO Operations',pri:'High',due:fd(2),time:'10:00',alarm:60,done:false},
+      {title:'Review and sign staff ID system memo',cat:'YPO Operations',pri:'Medium',due:fd(3),time:'14:00',alarm:30,done:false},
+      {title:'Update Zoho Books — April 2026 petty cash entries',cat:'YPO Operations',pri:'Medium',due:fd(1),time:'11:00',alarm:60,done:false},
+      {title:'Prepare VIDEE pitch deck final version',cat:'Consulting',pri:'High',due:fd(5),time:'08:00',alarm:1440,done:false},
     ];
     for (const t of samples) await addDoc(tasksCol, {...t, createdAt: serverTimestamp()});
     return;
   }
   seeded = true;
+  scheduleAlarms();
   render();
 }, (err) => {
   setSyncStatus('offline');
   console.error('Firestore error:', err);
 });
 
-function dueStatus(due, remind, done) {
-  if (!due || done) return null;
-  const today = new Date(); today.setHours(0,0,0,0);
-  const dd = new Date(due); dd.setHours(0,0,0,0);
-  const diff = Math.round((dd - today) / 86400000);
-  if (diff < 0) return {label:'Overdue '+Math.abs(diff)+'d', alert:true};
-  if (diff === 0) return {label:'Due today', alert:true};
-  if (diff <= remind) return {label:'Due in '+diff+'d', alert:true};
-  return {label: dd.toLocaleDateString('en-GB',{day:'numeric',month:'short'}), alert:false};
+// ── ALARMS ──────────────────────────────────────────────────────
+function scheduleAlarms() {
+  alarmTimers.forEach(t => clearTimeout(t));
+  alarmTimers = [];
+  const now = new Date();
+  tasks.filter(t => !t.done && t.due && t.time).forEach(t => {
+    const dueDate = new Date(`${t.due}T${t.time}`);
+    const alarmTime = new Date(dueDate.getTime() - (t.alarm || 60) * 60000);
+    const diff = alarmTime - now;
+    if (diff > 0 && diff < 86400000 * 2) {
+      const timer = setTimeout(() => triggerAlarm(t), diff);
+      alarmTimers.push(timer);
+    }
+  });
 }
 
+function triggerAlarm(task) {
+  // In-app popup
+  document.getElementById('alarm-task-text').textContent = task.title;
+  document.getElementById('alarm-modal').classList.add('open');
+  // Browser notification
+  if (Notification.permission === 'granted') {
+    new Notification('⏰ My Tasks Reminder', { body: task.title, icon: '' });
+  }
+  // Sound via Web Audio
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 300, 600].forEach(delay => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.3, ctx.currentTime + delay/1000);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay/1000 + 0.5);
+      osc.start(ctx.currentTime + delay/1000);
+      osc.stop(ctx.currentTime + delay/1000 + 0.5);
+    });
+  } catch(e) {}
+}
+
+window.dismissAlarm = () => document.getElementById('alarm-modal').classList.remove('open');
+
+// ── DUE STATUS ───────────────────────────────────────────────────
+function dueStatus(due, time, done) {
+  if (!due || done) return null;
+  const now = new Date();
+  const dueDate = time ? new Date(`${due}T${time}`) : new Date(due);
+  if (!time) dueDate.setHours(23,59,0,0);
+  const diff = dueDate - now;
+  const diffMins = Math.round(diff / 60000);
+  const diffDays = Math.round(diff / 86400000);
+  if (diff < 0) {
+    const absMins = Math.abs(diffMins);
+    if (absMins < 60) return {label:`Overdue ${absMins}m`, alert:true};
+    if (absMins < 1440) return {label:`Overdue ${Math.round(absMins/60)}h`, alert:true};
+    return {label:`Overdue ${Math.abs(diffDays)}d`, alert:true};
+  }
+  if (diffMins < 60) return {label:`Due in ${diffMins}m`, alert:true};
+  if (diffMins < 1440) return {label:`Due in ${Math.round(diffMins/60)}h`, alert:true};
+  if (diffDays === 0) return {label:'Due today'+(time?' at '+fmt12(time):''), alert:true};
+  if (diffDays <= 2) return {label:`Due in ${diffDays}d`+(time?' at '+fmt12(time):''), alert:true};
+  return {label: new Date(due).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+(time?' '+fmt12(time):''), alert:false};
+}
+
+function fmt12(t) {
+  const [h,m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+// ── FILTER ───────────────────────────────────────────────────────
 window.setFilter = (f, btn) => {
   currentFilter = f;
   document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
@@ -234,12 +340,14 @@ window.setFilter = (f, btn) => {
   render();
 };
 
+// ── TOGGLE DONE ──────────────────────────────────────────────────
 window.toggleDone = async (id) => {
   setSyncStatus('syncing');
   const t = tasks.find(x => x.id === id);
   if (t) await updateDoc(doc(db,'tasks',id), {done: !t.done});
 };
 
+// ── DELETE ───────────────────────────────────────────────────────
 window.deleteTask = async (id) => {
   if (confirm('Delete this task?')) {
     setSyncStatus('syncing');
@@ -247,35 +355,100 @@ window.deleteTask = async (id) => {
   }
 };
 
+// ── OPEN SHEET (NEW) ─────────────────────────────────────────────
 window.openSheet = () => {
+  document.getElementById('sheet-title').textContent = 'New Task';
+  document.getElementById('save-btn').textContent = 'Save Task';
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-cat').value = 'YPO Operations';
+  document.getElementById('f-pri').value = 'Medium';
+  document.getElementById('f-edit-id').value = '';
+  document.getElementById('other-input').classList.remove('show');
+  document.getElementById('f-other-cat').value = '';
   const d = new Date(); d.setDate(d.getDate()+1);
   document.getElementById('f-due').value = d.toISOString().split('T')[0];
-  document.getElementById('f-title').value = '';
+  document.getElementById('f-time').value = '09:00';
+  document.getElementById('f-alarm').value = '60';
   document.getElementById('sheet-overlay').classList.add('open');
   setTimeout(() => document.getElementById('f-title').focus(), 300);
 };
 
+// ── OPEN SHEET (EDIT) ────────────────────────────────────────────
+window.editTask = (id) => {
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('sheet-title').textContent = 'Edit Task';
+  document.getElementById('save-btn').textContent = 'Update Task';
+  document.getElementById('f-title').value = t.title || '';
+  document.getElementById('f-pri').value = t.pri || 'Medium';
+  document.getElementById('f-due').value = t.due || '';
+  document.getElementById('f-time').value = t.time || '09:00';
+  document.getElementById('f-alarm').value = t.alarm != null ? String(t.alarm) : '60';
+  document.getElementById('f-edit-id').value = id;
+
+  // Handle category
+  const cats = ['YPO Operations','SUA','Consulting','Meetings','Family'];
+  if (cats.includes(t.cat)) {
+    document.getElementById('f-cat').value = t.cat;
+    document.getElementById('other-input').classList.remove('show');
+  } else {
+    document.getElementById('f-cat').value = 'Other';
+    document.getElementById('other-input').classList.add('show');
+    document.getElementById('f-other-cat').value = t.cat || '';
+  }
+  document.getElementById('sheet-overlay').classList.add('open');
+};
+
+// ── CATEGORY CHANGE ──────────────────────────────────────────────
+window.handleCatChange = () => {
+  const val = document.getElementById('f-cat').value;
+  const oi = document.getElementById('other-input');
+  if (val === 'Other') { oi.classList.add('show'); document.getElementById('f-other-cat').focus(); }
+  else oi.classList.remove('show');
+};
+
+// ── CLOSE SHEET ──────────────────────────────────────────────────
 window.closeSheet = (e) => {
   if (e.target === document.getElementById('sheet-overlay'))
     document.getElementById('sheet-overlay').classList.remove('open');
 };
 
+// ── SAVE / UPDATE ────────────────────────────────────────────────
 window.saveTask = async () => {
   const title = document.getElementById('f-title').value.trim();
   if (!title) { document.getElementById('f-title').focus(); return; }
-  setSyncStatus('syncing');
-  await addDoc(tasksCol, {
+
+  let cat = document.getElementById('f-cat').value;
+  if (cat === 'Other') {
+    cat = document.getElementById('f-other-cat').value.trim() || 'Other';
+  }
+
+  const payload = {
     title,
-    cat: document.getElementById('f-cat').value,
+    cat,
     pri: document.getElementById('f-pri').value,
     due: document.getElementById('f-due').value,
-    remind: parseInt(document.getElementById('f-remind').value),
-    done: false,
-    createdAt: serverTimestamp()
-  });
+    time: document.getElementById('f-time').value,
+    alarm: parseInt(document.getElementById('f-alarm').value),
+    done: false
+  };
+
+  const editId = document.getElementById('f-edit-id').value;
+  setSyncStatus('syncing');
+
+  if (editId) {
+    // Preserve done status on edit
+    const existing = tasks.find(x => x.id === editId);
+    payload.done = existing ? existing.done : false;
+    await updateDoc(doc(db,'tasks',editId), payload);
+  } else {
+    payload.createdAt = serverTimestamp();
+    await addDoc(tasksCol, payload);
+  }
   document.getElementById('sheet-overlay').classList.remove('open');
 };
 
+// ── RENDER ───────────────────────────────────────────────────────
 function render() {
   document.getElementById('today-label').textContent =
     new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -291,22 +464,27 @@ function render() {
 
   const list = document.getElementById('task-list');
   list.innerHTML = sorted.length ? sorted.map(t => {
-    const ds = dueStatus(t.due, t.remind, t.done);
+    const ds = dueStatus(t.due, t.time, t.done);
+    const timeStr = t.time ? ` · ${fmt12(t.time)}` : '';
     return `<div class="task-card pri-${t.pri} ${t.done?'done':''}">
       <button class="check-btn" onclick="toggleDone('${t.id}')">${t.done?'✓':''}</button>
-      <div class="task-body">
+      <div class="task-body" onclick="editTask('${t.id}')">
         <div class="task-title">${t.title}</div>
         <div class="task-meta">
           <span class="badge badge-${t.pri}">${t.pri}</span>
           <span class="badge badge-cat">${t.cat}</span>
           ${ds?`<span class="due-chip ${ds.alert?'alert':''}">🕐 ${ds.label}</span>`:''}
+          ${t.time&&!ds?`<span class="due-chip">🕐 ${fmt12(t.time)}</span>`:''}
         </div>
       </div>
-      <button class="del-btn" onclick="deleteTask('${t.id}')">✕</button>
+      <div class="card-actions">
+        <button class="edit-btn" onclick="editTask('${t.id}')" title="Edit">✏</button>
+        <button class="del-btn" onclick="deleteTask('${t.id}')" title="Delete">✕</button>
+      </div>
     </div>`;
   }).join('') : '<div class="empty">No tasks here</div>';
 
-  const alerts = tasks.filter(t => { if(t.done) return false; const ds=dueStatus(t.due,t.remind,false); return ds&&ds.alert; });
+  const alerts = tasks.filter(t => { if(t.done) return false; const ds=dueStatus(t.due,t.time,false); return ds&&ds.alert; });
   const ab = document.getElementById('alert-bar');
   if (alerts.length) {
     ab.classList.add('show');
@@ -318,7 +496,13 @@ function render() {
   document.getElementById('s-done').textContent = tasks.filter(t=>t.done).length;
 }
 
-if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+// ── NOTIFICATIONS ────────────────────────────────────────────────
+if ('Notification' in window && Notification.permission === 'default') {
+  Notification.requestPermission();
+}
+
+// Update clock every minute for accurate due-time display
+setInterval(render, 60000);
 
 document.getElementById('today-label').textContent =
   new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
