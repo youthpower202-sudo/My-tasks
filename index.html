@@ -29,6 +29,10 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .sync-dot.offline{background:var(--red)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 .app-date{font-size:12px;color:rgba(255,255,255,0.6);margin-top:3px;font-weight:300}
+
+.app-brand{display:flex;align-items:center;gap:12px}
+.profile-pic{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);flex-shrink:0}
+
 .add-fab{width:44px;height:44px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;line-height:1}
 .add-fab:active{transform:scale(0.93)}
 .alert-bar{background:var(--red);color:#fff;padding:10px 20px;font-size:13px;font-weight:500;display:none;align-items:center;gap:8px}
@@ -43,6 +47,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .stat{background:var(--green-pale);border-radius:var(--radius-sm);padding:12px;text-align:center}
 .stat-n{font-size:26px;font-weight:600;color:var(--green-deep);line-height:1}
 .stat-l{font-size:11px;color:var(--text-secondary);margin-top:3px}
+.sort-label{font-size:11px;color:var(--text-muted);padding:4px 16px 8px;font-style:italic}
 .task-list{padding:0 12px 100px;display:flex;flex-direction:column;gap:8px}
 .task-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 14px 12px;display:flex;gap:12px;align-items:flex-start;position:relative;overflow:hidden}
 .task-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
@@ -51,9 +56,11 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .task-card.pri-Low::before{background:var(--green-bright)}
 .task-card.done{opacity:0.45}
 .task-card.done .task-title{text-decoration:line-through}
+.task-card.ringing{animation:ring-pulse 0.5s infinite alternate}
+@keyframes ring-pulse{from{box-shadow:0 0 0 0 rgba(179,58,58,0.4)}to{box-shadow:0 0 0 8px rgba(179,58,58,0)}}
 .check-btn{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:12px;font-weight:700;color:transparent}
 .task-card.done .check-btn{background:var(--green-bright);border-color:var(--green-bright);color:#fff}
-.task-body{flex:1;min-width:0;cursor:pointer}
+.task-body{flex:1;min-width:0}
 .task-title{font-size:15px;font-weight:500;color:var(--text-primary);line-height:1.4}
 .task-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;align-items:center}
 .badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
@@ -64,9 +71,8 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .due-chip{font-size:11px;color:var(--text-muted)}
 .due-chip.alert{color:var(--red);font-weight:500}
 .card-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
-.edit-btn{background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:2px 4px;border-radius:6px;line-height:1}
+.edit-btn,.del-btn{background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:2px 4px;border-radius:6px;line-height:1}
 .edit-btn:active{background:var(--green-light);color:var(--green-mid)}
-.del-btn{background:transparent;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;padding:2px 4px;border-radius:6px;line-height:1}
 .del-btn:active{background:var(--red-light);color:var(--red)}
 .empty{text-align:center;padding:3rem 2rem;color:var(--text-muted);font-size:14px}
 .loading{text-align:center;padding:2.5rem;color:var(--text-muted);font-size:13px}
@@ -84,23 +90,22 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--green-bright);border-color:transparent}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 14px}
 .field-row .field{padding:0}
-.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 20px 14px}
-.field-row3 .field{padding:0}
 .save-btn{display:block;width:calc(100% - 40px);margin:4px 20px 16px;padding:15px;background:var(--green-deep);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
 .save-btn:active{background:var(--green-mid)}
-
-/* Other category input */
 .other-input{display:none;margin-top:8px}
 .other-input.show{display:block}
 
-/* Alarm modal */
-.alarm-modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+/* ALARM MODAL */
+.alarm-modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
 .alarm-modal.open{display:flex}
-.alarm-box{background:var(--white);border-radius:20px;padding:24px;width:100%;max-width:340px;text-align:center}
-.alarm-icon{font-size:48px;margin-bottom:12px}
-.alarm-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--green-deep);margin-bottom:6px}
-.alarm-task{font-size:14px;color:var(--text-secondary);margin-bottom:20px;line-height:1.5}
-.alarm-dismiss{background:var(--green-deep);color:#fff;border:none;padding:12px 32px;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;width:100%}
+.alarm-box{background:var(--white);border-radius:20px;padding:28px 24px;width:100%;max-width:340px;text-align:center;animation:pop-in 0.3s ease}
+@keyframes pop-in{from{transform:scale(0.85);opacity:0}to{transform:scale(1);opacity:1}}
+.alarm-icon{font-size:52px;margin-bottom:10px;animation:shake 0.5s infinite}
+@keyframes shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.alarm-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--red);margin-bottom:8px}
+.alarm-task{font-size:14px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;font-weight:500}
+.alarm-time{font-size:12px;color:var(--text-muted);margin-bottom:22px}
+.alarm-dismiss{background:var(--green-deep);color:#fff;border:none;padding:13px 32px;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;width:100%}
 </style>
 </head>
 <body>
@@ -124,11 +129,13 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
   </div>
 </div>
 
-<div class="stats-row">
+<div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
   <div class="stat"><div class="stat-n" id="s-total">—</div><div class="stat-l">Total</div></div>
   <div class="stat"><div class="stat-n" id="s-pending">—</div><div class="stat-l">Pending</div></div>
+  <div class="stat" style="background:#fdeaea"><div class="stat-n" style="color:#b33a3a" id="s-delayed">—</div><div class="stat-l" style="color:#b33a3a">Delayed</div></div>
   <div class="stat"><div class="stat-n" id="s-done">—</div><div class="stat-l">Done</div></div>
 </div>
+<div class="sort-label">↑ Sorted by nearest deadline first</div>
 
 <div class="task-list" id="task-list"><div class="loading">☁ Connecting to cloud sync...</div></div>
 
@@ -174,9 +181,9 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
       </div>
     </div>
     <div class="field">
-      <label>Alarm reminder</label>
+      <label>Remind me (before due time)</label>
       <select id="f-alarm">
-        <option value="0">At due time</option>
+        <option value="0">At exact due time</option>
         <option value="15">15 minutes before</option>
         <option value="30">30 minutes before</option>
         <option value="60" selected>1 hour before</option>
@@ -193,8 +200,9 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 <div class="alarm-modal" id="alarm-modal">
   <div class="alarm-box">
     <div class="alarm-icon">⏰</div>
-    <div class="alarm-title">Task Reminder!</div>
+    <div class="alarm-title">Task Due!</div>
     <div class="alarm-task" id="alarm-task-text"></div>
+    <div class="alarm-time" id="alarm-time-text"></div>
     <button class="alarm-dismiss" onclick="dismissAlarm()">Got it — Dismiss</button>
   </div>
 </div>
@@ -223,17 +231,20 @@ let tasks = [];
 let currentFilter = 'all';
 let seeded = false;
 let alarmTimers = [];
+let audioCtx = null;
+let ringingInterval = null;
 
+// ── SYNC STATUS ──────────────────────────────────────────────────
 function setSyncStatus(s) {
   const dot = document.getElementById('sync-dot');
   const bar = document.getElementById('info-bar');
-  const txt = document.getElementById('info-text');
   dot.className = 'sync-dot';
-  if (s === 'live') { bar.classList.remove('show'); }
-  else if (s === 'syncing') { dot.classList.add('syncing'); bar.classList.add('show'); txt.textContent = '↻ Syncing...'; }
-  else if (s === 'offline') { dot.classList.add('offline'); bar.classList.add('show'); txt.textContent = 'Offline — will sync when connected'; }
+  if (s === 'live') bar.classList.remove('show');
+  else if (s === 'syncing') { dot.classList.add('syncing'); bar.classList.add('show'); document.getElementById('info-text').textContent='↻ Syncing...'; }
+  else if (s === 'offline') { dot.classList.add('offline'); bar.classList.add('show'); document.getElementById('info-text').textContent='Offline — will sync when connected'; }
 }
 
+// ── FIRESTORE LISTENER ───────────────────────────────────────────
 const q = query(tasksCol, orderBy("createdAt", "asc"));
 onSnapshot(q, async (snapshot) => {
   tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -255,67 +266,123 @@ onSnapshot(q, async (snapshot) => {
   seeded = true;
   scheduleAlarms();
   render();
-}, (err) => {
-  setSyncStatus('offline');
-  console.error('Firestore error:', err);
-});
+}, err => { setSyncStatus('offline'); console.error(err); });
 
-// ── ALARMS ──────────────────────────────────────────────────────
+// ── RINGTONE (Web Audio) ─────────────────────────────────────────
+function playRingtone() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    const notes = [880, 988, 1047, 988, 880, 0, 880, 988, 1047, 1175, 1047, 880];
+    const dur = 0.18;
+    let t = audioCtx.currentTime;
+
+    notes.forEach(freq => {
+      if (freq > 0) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.35, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.9);
+        osc.start(t); osc.stop(t + dur);
+      }
+      t += dur;
+    });
+
+    // Loop ringtone every 3 seconds
+    return setInterval(() => {
+      if (!audioCtx) return;
+      const n2 = [880, 988, 1047, 988, 880, 0, 880, 988, 1047, 1175, 1047, 880];
+      let t2 = audioCtx.currentTime;
+      n2.forEach(freq => {
+        if (freq > 0) {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.35, t2);
+          gain.gain.exponentialRampToValueAtTime(0.001, t2 + dur * 0.9);
+          osc.start(t2); osc.stop(t2 + dur);
+        }
+        t2 += dur;
+      });
+    }, 3000);
+  } catch(e) { return null; }
+}
+
+function stopRingtone() {
+  if (ringingInterval) { clearInterval(ringingInterval); ringingInterval = null; }
+}
+
+// ── ALARMS ───────────────────────────────────────────────────────
 function scheduleAlarms() {
   alarmTimers.forEach(t => clearTimeout(t));
   alarmTimers = [];
   const now = new Date();
   tasks.filter(t => !t.done && t.due && t.time).forEach(t => {
     const dueDate = new Date(`${t.due}T${t.time}`);
-    const alarmTime = new Date(dueDate.getTime() - (t.alarm || 60) * 60000);
+    const alarmTime = new Date(dueDate.getTime() - (t.alarm || 0) * 60000);
     const diff = alarmTime - now;
     if (diff > 0 && diff < 86400000 * 2) {
       const timer = setTimeout(() => triggerAlarm(t), diff);
       alarmTimers.push(timer);
     }
+    // Also trigger at exact due time if alarm is before
+    if (t.alarm > 0) {
+      const exactDiff = dueDate - now;
+      if (exactDiff > 0 && exactDiff < 86400000 * 2) {
+        const exactTimer = setTimeout(() => triggerAlarm(t, true), exactDiff);
+        alarmTimers.push(exactTimer);
+      }
+    }
   });
 }
 
-function triggerAlarm(task) {
-  // In-app popup
+function triggerAlarm(task, isDue = false) {
   document.getElementById('alarm-task-text').textContent = task.title;
+  document.getElementById('alarm-time-text').textContent = isDue
+    ? '🔴 This task is due RIGHT NOW!'
+    : `⏳ Due at ${fmt12(task.time)} — ${task.alarm} min reminder`;
   document.getElementById('alarm-modal').classList.add('open');
+
+  // Pulse the matching card
+  document.querySelectorAll('.task-card').forEach(c => c.classList.remove('ringing'));
+  const card = document.querySelector(`[data-id="${task.id}"]`);
+  if (card) card.classList.add('ringing');
+
+  // Play ringtone
+  ringingInterval = playRingtone();
+
   // Browser notification
   if (Notification.permission === 'granted') {
-    new Notification('⏰ My Tasks Reminder', { body: task.title, icon: '' });
-  }
-  // Sound via Web Audio
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 300, 600].forEach(delay => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 880;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.3, ctx.currentTime + delay/1000);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay/1000 + 0.5);
-      osc.start(ctx.currentTime + delay/1000);
-      osc.stop(ctx.currentTime + delay/1000 + 0.5);
+    new Notification(isDue ? '🔴 Task Due Now!' : '⏰ Task Reminder', {
+      body: task.title,
+      requireInteraction: true
     });
-  } catch(e) {}
+  }
 }
 
-window.dismissAlarm = () => document.getElementById('alarm-modal').classList.remove('open');
+window.dismissAlarm = () => {
+  document.getElementById('alarm-modal').classList.remove('open');
+  stopRingtone();
+  document.querySelectorAll('.task-card').forEach(c => c.classList.remove('ringing'));
+};
 
 // ── DUE STATUS ───────────────────────────────────────────────────
 function dueStatus(due, time, done) {
   if (!due || done) return null;
   const now = new Date();
-  const dueDate = time ? new Date(`${due}T${time}`) : new Date(due);
-  if (!time) dueDate.setHours(23,59,0,0);
+  const dueDate = time ? new Date(`${due}T${time}`) : (() => { const d = new Date(due); d.setHours(23,59,0,0); return d; })();
   const diff = dueDate - now;
   const diffMins = Math.round(diff / 60000);
   const diffDays = Math.round(diff / 86400000);
   if (diff < 0) {
-    const absMins = Math.abs(diffMins);
-    if (absMins < 60) return {label:`Overdue ${absMins}m`, alert:true};
-    if (absMins < 1440) return {label:`Overdue ${Math.round(absMins/60)}h`, alert:true};
+    const a = Math.abs(diffMins);
+    if (a < 60) return {label:`Overdue ${a}m`, alert:true};
+    if (a < 1440) return {label:`Overdue ${Math.round(a/60)}h`, alert:true};
     return {label:`Overdue ${Math.abs(diffDays)}d`, alert:true};
   }
   if (diffMins < 60) return {label:`Due in ${diffMins}m`, alert:true};
@@ -326,10 +393,15 @@ function dueStatus(due, time, done) {
 }
 
 function fmt12(t) {
+  if (!t) return '';
   const [h,m] = t.split(':').map(Number);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
-  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+  return `${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
+}
+
+function getDeadlineMs(t) {
+  if (!t.due) return Infinity;
+  const d = t.time ? new Date(`${t.due}T${t.time}`) : (() => { const x = new Date(t.due); x.setHours(23,59,0,0); return x; })();
+  return d.getTime();
 }
 
 // ── FILTER ───────────────────────────────────────────────────────
@@ -385,8 +457,6 @@ window.editTask = (id) => {
   document.getElementById('f-time').value = t.time || '09:00';
   document.getElementById('f-alarm').value = t.alarm != null ? String(t.alarm) : '60';
   document.getElementById('f-edit-id').value = id;
-
-  // Handle category
   const cats = ['YPO Operations','SUA','Consulting','Meetings','Family'];
   if (cats.includes(t.cat)) {
     document.getElementById('f-cat').value = t.cat;
@@ -399,7 +469,6 @@ window.editTask = (id) => {
   document.getElementById('sheet-overlay').classList.add('open');
 };
 
-// ── CATEGORY CHANGE ──────────────────────────────────────────────
 window.handleCatChange = () => {
   const val = document.getElementById('f-cat').value;
   const oi = document.getElementById('other-input');
@@ -407,7 +476,6 @@ window.handleCatChange = () => {
   else oi.classList.remove('show');
 };
 
-// ── CLOSE SHEET ──────────────────────────────────────────────────
 window.closeSheet = (e) => {
   if (e.target === document.getElementById('sheet-overlay'))
     document.getElementById('sheet-overlay').classList.remove('open');
@@ -417,27 +485,19 @@ window.closeSheet = (e) => {
 window.saveTask = async () => {
   const title = document.getElementById('f-title').value.trim();
   if (!title) { document.getElementById('f-title').focus(); return; }
-
   let cat = document.getElementById('f-cat').value;
-  if (cat === 'Other') {
-    cat = document.getElementById('f-other-cat').value.trim() || 'Other';
-  }
-
+  if (cat === 'Other') cat = document.getElementById('f-other-cat').value.trim() || 'Other';
   const payload = {
-    title,
-    cat,
+    title, cat,
     pri: document.getElementById('f-pri').value,
     due: document.getElementById('f-due').value,
     time: document.getElementById('f-time').value,
     alarm: parseInt(document.getElementById('f-alarm').value),
     done: false
   };
-
   const editId = document.getElementById('f-edit-id').value;
   setSyncStatus('syncing');
-
   if (editId) {
-    // Preserve done status on edit
     const existing = tasks.find(x => x.id === editId);
     payload.done = existing ? existing.done : false;
     await updateDoc(doc(db,'tasks',editId), payload);
@@ -453,28 +513,41 @@ function render() {
   document.getElementById('today-label').textContent =
     new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
+  const now = new Date();
   let visible = currentFilter === 'done' ? tasks.filter(t => t.done)
+    : currentFilter === 'delayed' ? tasks.filter(t => {
+        if (t.done) return false;
+        if (!t.due) return false;
+        const dd = t.time ? new Date(t.due+'T'+t.time) : (() => { const d=new Date(t.due); d.setHours(23,59,0,0); return d; })();
+        return dd < now;
+      })
     : currentFilter === 'all' ? tasks.filter(t => !t.done)
     : tasks.filter(t => t.pri === currentFilter && !t.done);
 
-  const sorted = [...visible].sort((a,b) => {
+  // Sort by nearest deadline first, then by priority for same deadline
+  const sorted = [...visible].sort((a, b) => {
     if (a.done !== b.done) return a.done ? 1 : -1;
+    const da = getDeadlineMs(a);
+    const db2 = getDeadlineMs(b);
+    if (da !== db2) return da - db2;
     return ({High:0,Medium:1,Low:2}[a.pri]||1) - ({High:0,Medium:1,Low:2}[b.pri]||1);
   });
 
   const list = document.getElementById('task-list');
-  list.innerHTML = sorted.length ? sorted.map(t => {
+  const emptyMsg = currentFilter === 'delayed' 
+    ? '✅ No delayed tasks — you are on track!'
+    : 'No tasks here';
+  list.innerHTML = sorted.length ? sorted.map((t,i) => {
     const ds = dueStatus(t.due, t.time, t.done);
-    const timeStr = t.time ? ` · ${fmt12(t.time)}` : '';
-    return `<div class="task-card pri-${t.pri} ${t.done?'done':''}">
+    const rankLabel = !t.done ? `<span style="font-size:10px;color:var(--text-muted);margin-right:2px">#${i+1}</span>` : '';
+    return `<div class="task-card pri-${t.pri} ${t.done?'done':''}" data-id="${t.id}">
       <button class="check-btn" onclick="toggleDone('${t.id}')">${t.done?'✓':''}</button>
-      <div class="task-body" onclick="editTask('${t.id}')">
-        <div class="task-title">${t.title}</div>
+      <div class="task-body">
+        <div class="task-title">${rankLabel}${t.title}</div>
         <div class="task-meta">
           <span class="badge badge-${t.pri}">${t.pri}</span>
           <span class="badge badge-cat">${t.cat}</span>
-          ${ds?`<span class="due-chip ${ds.alert?'alert':''}">🕐 ${ds.label}</span>`:''}
-          ${t.time&&!ds?`<span class="due-chip">🕐 ${fmt12(t.time)}</span>`:''}
+          ${ds?`<span class="due-chip ${ds.alert?'alert':''}">🕐 ${ds.label}</span>`:t.time?`<span class="due-chip">🕐 ${fmt12(t.time)}</span>`:''}
         </div>
       </div>
       <div class="card-actions">
@@ -482,7 +555,7 @@ function render() {
         <button class="del-btn" onclick="deleteTask('${t.id}')" title="Delete">✕</button>
       </div>
     </div>`;
-  }).join('') : '<div class="empty">No tasks here</div>';
+  }).join('') : '<div class="empty">'+emptyMsg+'</div>';
 
   const alerts = tasks.filter(t => { if(t.done) return false; const ds=dueStatus(t.due,t.time,false); return ds&&ds.alert; });
   const ab = document.getElementById('alert-bar');
@@ -491,19 +564,20 @@ function render() {
     document.getElementById('alert-text').textContent = alerts.length+' task'+(alerts.length>1?'s':'')+' need your attention today';
   } else ab.classList.remove('show');
 
+  const nowR = new Date();
+  const delayedCount = tasks.filter(t => {
+    if (t.done || !t.due) return false;
+    const dd = t.time ? new Date(t.due+'T'+t.time) : (() => { const d=new Date(t.due); d.setHours(23,59,0,0); return d; })();
+    return dd < nowR;
+  }).length;
   document.getElementById('s-total').textContent = tasks.length;
   document.getElementById('s-pending').textContent = tasks.filter(t=>!t.done).length;
+  document.getElementById('s-delayed').textContent = delayedCount;
   document.getElementById('s-done').textContent = tasks.filter(t=>t.done).length;
 }
 
-// ── NOTIFICATIONS ────────────────────────────────────────────────
-if ('Notification' in window && Notification.permission === 'default') {
-  Notification.requestPermission();
-}
-
-// Update clock every minute for accurate due-time display
-setInterval(render, 60000);
-
+if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+setInterval(render, 30000);
 document.getElementById('today-label').textContent =
   new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 setSyncStatus('syncing');
